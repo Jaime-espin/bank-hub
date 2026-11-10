@@ -6,3 +6,4 @@ venv/
 __pycache__/
 enablebanking-api-samples/
 config.json
+database.db

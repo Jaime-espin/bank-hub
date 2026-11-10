@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Dashboard</title>
+</head>
+<body>
+    <h1>Cuentas</h1>
+	<ul>
+    {% for c in cuentas %}
+        <li>{{ c[2] }} ({{ c[1] }}): {{ c[3] }} {{ c[4] }}</li>
+    {% endfor %}
+    </ul>
+
+    <a href="{{ url_for('dashboard.sincronizar') }}">Actualizar datos del banco</a>
+    <h1>Movimientos</h1>
+    <h2>Últimos movimientos</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Concepto</th>
+                <th>Contraparte</th>
+                <th>Tipo</th>
+                <th>Importe</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for m in movimientos %}
+            <tr>
+                <td>{{ m[0] }}</td>
+                <td>{{ m[3] }}</td>
+                <td>{{ m[4] }}</td>
+                <td>{{ m[2] }}</td>
+                <td>{{ m[1] }} {{ m[5] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
