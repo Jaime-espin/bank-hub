@@ -2,7 +2,10 @@
 
 Agregador personal de cuentas bancarias construido con Python/Flask y la API de [Enable Banking](https://enablebanking.com). Muestra saldos y movimientos de tus cuentas en un único dashboard.
 
-> **Estado:** MVP funcional. Uso personal en red local, banco sandbox Nordea Finlandia.
+> [!NOTE]
+> **Enfoque del proyecto:** El objetivo principal de este desarrollo es el aprendizaje y profundización en **backend** (Python, Flask, SQLite, integración de APIs bancarias con OAuth/PSD2, seguridad de datos y algoritmos de conciliación contable). La interfaz visual y los estilos de frontend (HTML/CSS) han sido delegados a agentes de IA, ya que el diseño frontend no es una prioridad para mí en este proyecto.
+
+> **Estado:** Fase 2 completada (soporte para cuentas reales en producción, categorización de gastos y conciliación de transferencias internas).
 
 ---
 

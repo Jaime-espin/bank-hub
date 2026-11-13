@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="es">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Movimientos</title>
+
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; max-width: 960px; margin: 40px auto; padding: 0 20px; color: #333; background: #f8fafc; }
+        h1 { color: #1e293b; }
+        .btn-back { display: inline-block; margin-bottom: 20px; color: #2563eb; text-decoration: none; font-weight: 500; }
+        .btn-back:hover { text-decoration: underline; }
+
+        /* Barra de filtros */
+        form { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; background: white; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0; }
+        input[type="search"], select { padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.95rem; }
+        button { background: #2563eb; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 500; }
+        button:hover { background: #1d4ed8; }
+
+        /* Tabla moderna */
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        th { background: #f1f5f9; color: #475569; font-weight: 600; }
+
+        /* Badges */
+        .badge { padding: 4px 10px; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
+        .badge-ingreso { background: #dcfce7; color: #15803d; }
+        .badge-gasto { background: #fee2e2; color: #b91c1c; }
+        .badge-transferencia_interna { background: #e0f2fe; color: #0369a1; }
+    </style>
+</head>
+<body>
+    <a href="{{ url_for('dashboard.mostrar_dashboard') }}">← Volver al Dashboard</a>
+    
+	<h1>Movimientos</h1>
+
+	<form method="get">
+		<input type="search" name="busqueda" placeholder="Buscar" value="{{ busqueda or '' }}">
+
+		<select name="tipo">
+			<option value="">Todos los tipos</option>
+			<option value="ingreso" {% if tipo_actual == 'ingreso' %}selected{% endif %}>Ingreso</option>
+			<option value="gasto" {% if tipo_actual == 'gasto' %}selected{% endif %}>Gasto</option>
+            <option value="transferencia_interna" {% if tipo_actual == 'transferencia_interna' %}selected{% endif %}>Transferencia interna</option>
+		</select>
+
+		<select name="cuenta_id">
+			<option value="">Todas las cuentas</option>
+			{% for cuenta in cuentas %}
+				<option value="{{ cuenta[0] }}" {% if cuenta_actual|string == cuenta[0]|string %}selected{% endif %}>{{ cuenta[2] }}</option>
+			{% endfor %}
+		</select>
+
+		<select name="categoria">
+			<option value="">Todas las categorías</option>
+			<option value="Gasolina" {% if categoria_actual == 'Gasolina' %}selected{% endif %}>⛽ Gasolina</option>
+			<option value="Otros" {% if categoria_actual == 'Otros' %}selected{% endif %}>Otros</option>
+		</select>
+
+		<button type="submit">Filtrar</button>
+	</form>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Concepto</th>
+                <th>Contraparte</th>
+                <th>Tipo</th>
+                <th>Categoría</th>
+                <th>Importe</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for m in movimientos %}
+            <tr>
+                <td>{{ m[0] }}</td>
+                <td>{{ m[3] }}</td>
+                <td>{{ m[4] }}</td>
+                <td><span class="badge badge-{{ m[2] }}">{{ m[2] }}</span></td>
+                <td>{% if m[6] == 'Gasolina' %}<span class="badge" style="background: #fef3c7; color: #92400e;">⛽ Gasolina</span>{% else %}<span style="color: #94a3b8; font-size: 0.85rem;">Otros</span>{% endif %}</td>
+                <td>{{ m[1] }} {{ m[5] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

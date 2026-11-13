@@ -9,13 +9,14 @@ import jwt as pyjwt
 
 
 API_ORIGIN = "https://api.enablebanking.com"
-ASPSP_NAME = "Nordea"
-ASPSP_COUNTRY = "FI"
 
-def jwt():
+def get_config():
     file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "config.json")
     with open(file_path, "r") as f:
-        config = json.load(f)
+        return json.load(f)
+
+def jwt():
+    config = get_config()
     iat = int(datetime.now().timestamp())
     jwt_body = {
         "iss": "enablebanking.com",
@@ -48,17 +49,21 @@ def authenticate():
     # Desubre los bancos disponibles
     r = requests.get(f"{API_ORIGIN}/aspsps", headers=base_headers)
     if r.status_code == 200:
-        print("Available ASPSPs:")
-        pprint(r.json()["aspsps"])
+        aspsps = r.json().get("aspsps", [])
+        es_banks = [a["name"] for a in aspsps if a.get("country") == "ES"]
+        print("Bancos disponibles en España:", es_banks)
     else:
         print(f"Error response {r.status_code}:", r.text)
         return
      # Starting authorization
+    config = get_config()
+    aspsp_name = config.get("aspspName")
+    aspsp_country = config.get("aspspCountry")
     body = {
         "access": {
             "valid_until": (datetime.now(timezone.utc) + timedelta(days=10)).isoformat()
         },
-        "aspsp": {"name": ASPSP_NAME, "country": ASPSP_COUNTRY},
+        "aspsp": {"name": aspsp_name, "country": aspsp_country},
         "state": str(uuid.uuid4()),
         "redirect_url": app["redirect_urls"][0],
         "psu_type": "personal",
@@ -98,9 +103,9 @@ def get_balances(account_uid):
 
 def get_transactions(account_uid):
     base_headers = {"Authorization": f"Bearer {jwt()}"}
-    # Retrieving account transactions (since 90 days ago)
+    # Retrieving account transactions (since 365 days ago)
     query = {
-        "date_from": (datetime.now(timezone.utc) - timedelta(days=90)).date().isoformat(),
+        "date_from": (datetime.now(timezone.utc) - timedelta(days=365)).date().isoformat(),
     }
     continuation_key = None
     todas = []

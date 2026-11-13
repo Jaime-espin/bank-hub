@@ -11,4 +11,4 @@ app.register_blueprint(dashboard)
 crear_tablas()
 
 if __name__ == "__main__":
-    app.run(debug=True, port=8080)
+    app.run(debug=True, port=8080, ssl_context=('cert.pem', 'key.pem'))

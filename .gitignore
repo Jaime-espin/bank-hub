@@ -7,3 +7,4 @@ __pycache__/
 enablebanking-api-samples/
 config.json
 database.db
+*.db

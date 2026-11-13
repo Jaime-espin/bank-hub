@@ -4,19 +4,71 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Dashboard</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; max-width: 960px; margin: 40px auto; padding: 0 20px; color: #333; background: #f8fafc; }
+        h1, h2 { color: #1e293b; }
+        
+        /* Grid de Tarjetas */
+        .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin: 20px 0; }
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
+        .card-title { font-size: 0.85rem; font-weight: 600; text-transform: uppercase; color: #64748b; margin-bottom: 8px; }
+        .card-amount { font-size: 1.5rem; font-weight: 700; color: #0f172a; }
+        .card-total { border-left: 4px solid #3b82f6; }
+        
+        /* Botón de sincronizar */
+        .btn-sync { display: inline-block; background: #2563eb; color: white; padding: 10px 18px; border-radius: 8px; text-decoration: none; font-weight: 500; margin: 15px 0; }
+        .btn-sync:hover { background: #1d4ed8; }
+
+        /* Tabla moderna */
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        th { background: #f1f5f9; color: #475569; font-weight: 600; }
+        
+        /* Badges de colores para los tipos */
+        .badge { padding: 4px 10px; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
+        .badge-ingreso { background: #dcfce7; color: #15803d; }
+        .badge-gasto { background: #fee2e2; color: #b91c1c; }
+        .badge-transferencia_interna { background: #e0f2fe; color: #0369a1; }
+    </style>
 </head>
 <body>
     <h1>Cuentas</h1>
 	<ul>
     {% for c in cuentas %}
-        <li>{{ c[2] }} ({{ c[1] }}): {{ c[3] }} {{ c[4] }}</li>
+        <li style="margin-bottom: 8px;"><strong>{{ c[2] }}</strong> ({{ c[5] }}): <strong>{{ c[3] }} {{ c[4] }}</strong></li>
     {% endfor %}
     </ul>
 
-    <a href="{{ url_for('dashboard.sincronizar') }}">Actualizar datos del banco</a>
+    <h2>Resumen de saldos</h2>
+    <div class="cards-grid">
+        <div class="card card-total">
+            <div class="card-title">Patrimonio Total</div>
+            <div class="card-amount">{{ resumen['total'] }} {{ cuentas[0][4] if cuentas else 'EUR' }}</div>
+        </div>
+        <div class="card">
+            <div class="card-title"> Liquidez (Corriente)</div>
+            <div class="card-amount">{{ resumen['corriente'] }} {{ cuentas[0][4] if cuentas else 'EUR' }}</div>
+        </div>
+        <div class="card">
+            <div class="card-title"> Ahorro / Crédito</div>
+            <div class="card-amount">{{ resumen['ahorros'] }} {{ cuentas[0][4] if cuentas else 'EUR' }}</div>
+        </div>
+        <div class="card">
+            <div class="card-title"> Inversión</div>
+            <div class="card-amount">{{ resumen['inversion'] }} {{ cuentas[0][4] if cuentas else 'EUR' }}</div>
+        </div>
+        <div class="card" style="border-left: 4px solid #f59e0b;">
+            <div class="card-title">⛽ Gasto en Gasolina</div>
+            <div class="card-amount">{{ gasto_gasolina }} {{ cuentas[0][4] if cuentas else 'EUR' }}</div>
+        </div>
+    </div>
+
+    <a class="btn-sync" href="{{ url_for('dashboard.sincronizar') }}">Actualizar datos del banco</a>
+
     <h1>Movimientos</h1>
+    <a class="btn-sync" href="{{ url_for('dashboard.movimientos') }}">Ver todos los movimientos</a>
     <h2>Últimos movimientos</h2>
-    <table border="1">
+    <table>
         <thead>
             <tr>
                 <th>Fecha</th>
@@ -32,7 +84,7 @@
                 <td>{{ m[0] }}</td>
                 <td>{{ m[3] }}</td>
                 <td>{{ m[4] }}</td>
-                <td>{{ m[2] }}</td>
+                <td><span class="badge badge-{{ m[2] }}">{{ m[2] }}</span></td>
                 <td>{{ m[1] }} {{ m[5] }}</td>
             </tr>
             {% endfor %}
