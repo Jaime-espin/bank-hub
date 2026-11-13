@@ -216,12 +216,10 @@ Si ya existe, se omite. Así `/sincronizar` es idempotente: puedes llamarlo N ve
 
 ## Limitaciones conocidas
 
-- **Un solo usuario:** `user_exists()` sólo comprueba si hay algún usuario, no admite múltiples cuentas.
-- **Sin logout:** No hay ruta `/logout` para destruir la sesión Flask.
-- **Sesión bancaria fija 10 días:** Al expirar hay que re-autenticar manualmente (eliminar la fila de `sesiones_banco` y volver a hacer login).
-- **Sandbox únicamente:** Configurado para Nordea Finlandia en entorno de pruebas de Enable Banking.
-- **Sin CSS:** El dashboard muestra HTML plano sin estilos.
-- **`SECRET_KEY` hardcodeada:** Para producción real habría que moverla a variable de entorno.
+- **Alcance de Open Banking (PSD2) en inversiones:** La normativa europea PSD2 solo cubre cuentas de pago y efectivo. Para brokers o entidades de inversión (como MyInvestor), la API solo entrega la cuenta corriente de efectivo asociada, no los fondos de inversión ni carteras (ver alternativas en `ROADMAP.md`). La Unión Europea está preparando una nueva normativa llamada FIDA / Open Finance para obligar a los bancos a abrir los datos de inversiones en el futuro.
+- **Límite de consultas diarias (Rate Limit PSD2):** Redsys/bancos españoles aplican un límite de 4 consultas automáticas cada 24 horas por consentimiento (error 429 si se sincroniza repetidamente en poco tiempo).
+- **Un solo usuario:** `user_exists()` comprueba si hay un usuario principal en la base de datos local.
+- **Sesión bancaria renovable:** Las autorizaciones bancarias tienen una vigencia estándar de 90 a 180 días según la normativa PSD2.
 
 ---
 

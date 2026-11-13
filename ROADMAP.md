@@ -8,13 +8,13 @@ Documento de referencia para el diseño, evolución y prioridades del proyecto.
 
 > *"El objetivo de este proyecto es que cuando yo conecte mis cuentas reales, pueda visualizar toda mi información con facilidad para ver de una vista toda mi liquidez. También ver mis estadísticas de a dónde está yendo mi dinero, de qué forma está repartido mi saldo (cuánto en depósitos, cuánto en fondos y cuánta rentabilidad he obtenido). Al final es tener toda la información en un mismo lugar."*
 
-Bank-Hub no busca ser una app comercial. Es un **agregador y centro de mando financiero personal**, privado y local, enfocado en mostrar con precisión el patrimonio neto real.
+Es un **agregador y centro de mando financiero personal**, privado y local, enfocado en mostrar con precisión el patrimonio neto real.
 
 > **Nota sobre el desarrollo:** El foco de este proyecto está puesto al 100% en la lógica de negocio y **backend** (Python, Flask, SQLite, arquitectura en capas, seguridad de claves e integración de APIs bancarias reguladas). El diseño de interfaz y maquetación de frontend (HTML/CSS) ha sido apoyado con IA, ya que el aprendizaje de frontend no es una prioridad en este proyecto.
 
 ---
 
-## 2. El Problema a Resolver (La gran diferencia con otras apps)
+## 2. El Problema a resolver (La gran diferencia con otras apps)
 
 En muchas aplicaciones de finanzas personales (Fintonic, Wallet, etc.):
 - Cuando mueves dinero de tu cuenta corriente a tu cuenta de inversión (MyInvestor, Indexa, Trade Republic...) o contratas un depósito, **la app lo registra como un "gasto"**.
@@ -43,6 +43,27 @@ Para ver con claridad la distribución del dinero, las cuentas y activos se clas
 │ el día a día.     │                       │ + rentabilidad.     │
 └───────────────────┴───────────────────────┴─────────────────────┘
 ```
+
+---
+
+## 3.1. Limitación Regulatoria de Open Banking (PSD2) y Estrategia para Inversiones
+
+> **Contratiempo detectado:**  
+> La directiva europea **PSD2** únicamente obliga a las entidades bancarias a exponer por API las **cuentas de pago y efectivo** (cuentas corrientes y tarjetas). Los productos de inversión (fondos indexados, carteras automatizadas/roboadvisors, acciones y depósitos a plazo) están **legalmente excluidos de la PSD2** (a la espera del futuro marco europeo *FIDA / Open Finance*).
+> 
+> **Impacto en MyInvestor:**  
+> Al conectar `MyInvestor Banco` mediante Enable Banking, la API únicamente entrega el saldo y movimientos de la **cuenta corriente de efectivo**, pero **no proporciona las posiciones de los fondos, carteras automatizadas, participaciones ni rentabilidad acumulada**.
+
+### Alternativas evaluadas para incorporar la inversión:
+
+1. **Alternativa A: Seguimiento automático por código ISIN:**
+   - Se registran los fondos mediante su código **ISIN** (ej: `IE00B03HD191`) y el número de participaciones.
+   - Se consulta de forma automática y el valor liquidativo diario (NAV) mediante APIs financieras públicas (ej: Yahoo Finance o bases de fondos).
+   - *Ventajas:* Totalmente automatizado a partir del alta inicial, calcula rentabilidades acumuladas en tiempo real y no compromete credenciales privadas.
+
+2. **Alternativa B: Importación de extracto CSV / Excel:**
+   - Carga del extracto de posiciones descargado periódicamente desde la web de MyInvestor.
+   - *Ventajas:* Refleja exactamente todas las carteras y depósitos con fidelidad contable sin desarrollo de APIs complejas.
 
 ---
 
