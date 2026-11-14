@@ -1,11 +1,11 @@
 # Bank Hub
 
-Agregador personal de cuentas bancarias construido con Python/Flask y la API de [Enable Banking](https://enablebanking.com). Muestra saldos y movimientos de tus cuentas en un único dashboard.
+Agregador personal de finanzas y patrimonio construido con Python/Flask y la API de [Enable Banking](https://enablebanking.com). Combina sincronización automática de cuentas bancarias mediante Open Banking (PSD2) con soporte para importación y registro de productos de inversión y depósitos.
 
 > [!NOTE]
-> **Enfoque del proyecto:** El objetivo principal de este desarrollo es el aprendizaje y profundización en **backend** (Python, Flask, SQLite, integración de APIs bancarias con OAuth/PSD2, seguridad de datos y algoritmos de conciliación contable). La interfaz visual y los estilos de frontend (HTML/CSS) han sido delegados a agentes de IA, ya que el diseño frontend no es una prioridad para mí en este proyecto.
+> **Enfoque del proyecto:** El objetivo principal de este desarrollo es el aprendizaje y profundización en **backend** (Python, Flask, SQLite, integración de APIs bancarias con OAuth/PSD2, seguridad de datos, algoritmos de conciliación contable y gestión híbrida de datos bancarios/inversión). La interfaz visual y los estilos de frontend (HTML/CSS) han sido delegados a agentes de IA, ya que el diseño frontend no es una prioridad para mí en este proyecto.
 
-> **Estado:** Fase 2 completada (soporte para cuentas reales en producción, categorización de gastos y conciliación de transferencias internas).
+> **Estado:** Arquitectura híbrida en desarrollo (sincronización automática de banca del día a día en producción, conciliación de transferencias internas, categorización de gastos y soporte de importación/registro para inversiones).
 
 ---
 
@@ -216,7 +216,7 @@ Si ya existe, se omite. Así `/sincronizar` es idempotente: puedes llamarlo N ve
 
 ## Limitaciones conocidas
 
-- **Alcance de Open Banking (PSD2) en inversiones:** La normativa europea PSD2 solo cubre cuentas de pago y efectivo. Para brokers o entidades de inversión (como MyInvestor), la API solo entrega la cuenta corriente de efectivo asociada, no los fondos de inversión ni carteras (ver alternativas en `ROADMAP.md`). La Unión Europea está preparando una nueva normativa llamada FIDA / Open Finance para obligar a los bancos a abrir los datos de inversiones en el futuro.
+- **Alcance de Open Banking (PSD2) en inversiones:** La normativa europea PSD2 solo cubre cuentas de pago y efectivo. Para brokers o entidades de inversión (como MyInvestor), la API solo entrega la cuenta corriente de efectivo asociada, no los fondos de inversión ni carteras (ver alternativas en `ROADMAP.md`). La Unión Europea está preparando una nueva normativa llamada FIDA / Open Finance para obligar a los bancos a abrir los datos de inversiones en el futuro. Para solventar esto y evitar bloqueos por pasarelas o verificaciones de identidad de terceros, Bank-Hub adopta un enfoque híbrido combinando la sincronización de cuentas corrientes con la importación/registro manual de depósitos y carteras de inversión (ver detalles en `ROADMAP.md`).
 - **Límite de consultas diarias (Rate Limit PSD2):** Redsys/bancos españoles aplican un límite de 4 consultas automáticas cada 24 horas por consentimiento (error 429 si se sincroniza repetidamente en poco tiempo).
 - **Un solo usuario:** `user_exists()` comprueba si hay un usuario principal en la base de datos local.
 - **Sesión bancaria renovable:** Las autorizaciones bancarias tienen una vigencia estándar de 90 a 180 días según la normativa PSD2.

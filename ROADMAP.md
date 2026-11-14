@@ -46,24 +46,30 @@ Para ver con claridad la distribución del dinero, las cuentas y activos se clas
 
 ---
 
-## 3.1. Limitación Regulatoria de Open Banking (PSD2) y Estrategia para Inversiones
+## 3.1. Arquitectura Híbrida: Open Banking (PSD2) + Registro/Importación Manual
 
 > **Contratiempo detectado:**  
-> La directiva europea **PSD2** únicamente obliga a las entidades bancarias a exponer por API las **cuentas de pago y efectivo** (cuentas corrientes y tarjetas). Los productos de inversión (fondos indexados, carteras automatizadas/roboadvisors, acciones y depósitos a plazo) están **legalmente excluidos de la PSD2** (a la espera del futuro marco europeo *FIDA / Open Finance*).
+> La directiva europea **PSD2** únicamente obliga a las entidades bancarias a exponer por API las **cuentas de pago y efectivo** (cuentas corrientes y tarjetas). Los productos de inversión (fondos indexados, carteras automatizadas/roboadvisors, acciones y depósitos a plazo) están **legalmente excluidos de la PSD2** (a la espera del futuro marco europeo *FIDA / Open Finance*). Además, las pasarelas bancarias pueden experimentar bloqueos temporales por verificaciones de identidad o requerimientos de actualización de datos (KYC/DNI).
 > 
-> **Impacto en MyInvestor:**  
-> Al conectar `MyInvestor Banco` mediante Enable Banking, la API únicamente entrega el saldo y movimientos de la **cuenta corriente de efectivo**, pero **no proporciona las posiciones de los fondos, carteras automatizadas, participaciones ni rentabilidad acumulada**.
+> **Impacto y Solución en Bank-Hub:**  
+> Para sortear estas limitaciones y no depender en exclusiva de la disponibilidad de las APIs de terceros, Bank-Hub adopta una **arquitectura híbrida**:
+> 1. **Conexión Open Banking (PSD2) 100% automatizada:** Para cuentas corrientes y tarjetas del día a día con soporte API activo.
+> 2. **Soporte de importación de extractos y registro manual:** Permite incorporar información de entidades o activos no cubiertos por PSD2:
+>    - **Depósitos a plazo:** Registro manual de condiciones (capital invertido, plazo, TIN/TAE, fecha de inicio y vencimiento) para calcular el patrimonio y los intereses devengados sin depender de APIs.
+>    - **Cuentas y Fondos de inversión:** Carga mediante extracto descargado o registro de aportaciones periódicas.
+>    - **Conciliación intacta:** Dado que el capital que nutre estas cuentas procede de transferencias desde la cuenta corriente principal conectada por API, el motor de conciliación de transferencias internas sigue funcionando con total precisión.
 
-### Alternativas evaluadas para incorporar la inversión:
+### Estrategia de integración para activos:
 
-1. **Alternativa A: Seguimiento automático por código ISIN:**
-   - Se registran los fondos mediante su código **ISIN** (ej: `IE00B03HD191`) y el número de participaciones.
-   - Se consulta de forma automática y el valor liquidativo diario (NAV) mediante APIs financieras públicas (ej: Yahoo Finance o bases de fondos).
-   - *Ventajas:* Totalmente automatizado a partir del alta inicial, calcula rentabilidades acumuladas en tiempo real y no compromete credenciales privadas.
+1. **Importación de extractos (CSV / Fichero descargado):**
+   - Descarga periódica de movimientos y posiciones desde el portal del banco o broker e importación directa en la base de datos local.
+   - Refleja con fidelidad contable los datos sin depender del estado de pasarelas externas.
 
-2. **Alternativa B: Importación de extracto CSV / Excel:**
-   - Carga del extracto de posiciones descargado periódicamente desde la web de MyInvestor.
-   - *Ventajas:* Refleja exactamente todas las carteras y depósitos con fidelidad contable sin desarrollo de APIs complejas.
+2. **Registro y seguimiento de Depósitos a Plazo:**
+   - Gestión de depósitos fijos como activos de ahorro/inversión con cálculo automático de valor y devengos.
+
+3. **Seguimiento por ISIN / APIs financieras públicas (Fase futura):**
+   - Seguimiento del valor liquidativo diario (NAV) de los fondos en cartera una vez registradas las aportaciones periódicas.
 
 ---
 

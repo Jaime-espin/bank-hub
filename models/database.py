@@ -95,10 +95,18 @@ def get_session_bank(usuario_id):
 def guardar_sesion_banco(usuario_id, banco, session_id, expira_en):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    cursor.execute(
-        'INSERT INTO sesiones_banco (usuario_id, banco, sesion_id, expira_en) VALUES (?, ?, ?, ?)',
-        (usuario_id, banco, session_id, expira_en)
-    )
+    cursor.execute('SELECT * FROM sesiones_banco WHERE usuario_id = ? AND banco = ?', (usuario_id, banco))
+    sesion_existente = cursor.fetchone()
+    if sesion_existente:
+        cursor.execute(
+            'UPDATE sesiones_banco SET sesion_id = ?, expira_en = ? WHERE usuario_id = ? AND banco = ?',
+            (session_id, expira_en, usuario_id, banco)
+        )
+    else:
+        cursor.execute(
+            'INSERT INTO sesiones_banco (usuario_id, banco, sesion_id, expira_en) VALUES (?, ?, ?, ?)',
+            (usuario_id, banco, session_id, expira_en)
+        )
     conn.commit()
     conn.close()
 
@@ -275,6 +283,19 @@ def get_gasto_categoria(usuario_id, categoria):
     total = cursor.fetchone()[0]
     conn.close()
     return round(total or 0.0, 2)
+
+#Preparamos multi-banco
+def get_todas_sesiones_banco(usuario_id):
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute('''
+        SELECT *
+        FROM sesiones_banco
+        WHERE usuario_id = ?
+    ''', (usuario_id,))
+    sesiones = cursor.fetchall()
+    conn.close()
+    return sesiones
 
 if __name__ == "__main__":
     crear_tablas()

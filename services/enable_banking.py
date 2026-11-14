@@ -32,7 +32,7 @@ def jwt():
     )
     return jwt
 
-def authenticate():
+def authenticate(aspsp_name=None, aspsp_country=None):
     base_headers = {"Authorization": f"Bearer {jwt()}"}
     
     # Requesting application details
@@ -55,13 +55,15 @@ def authenticate():
     else:
         print(f"Error response {r.status_code}:", r.text)
         return
-     # Starting authorization
+    # Starting authorization
     config = get_config()
-    aspsp_name = config.get("aspspName")
-    aspsp_country = config.get("aspspCountry")
+    if aspsp_name is None:
+        aspsp_name = config.get("aspspName")
+    if aspsp_country is None:
+        aspsp_country = config.get("aspspCountry")
     body = {
         "access": {
-            "valid_until": (datetime.now(timezone.utc) + timedelta(days=10)).isoformat()
+            "valid_until": (datetime.now(timezone.utc) + timedelta(days=90)).isoformat()
         },
         "aspsp": {"name": aspsp_name, "country": aspsp_country},
         "state": str(uuid.uuid4()),
@@ -105,7 +107,7 @@ def get_transactions(account_uid):
     base_headers = {"Authorization": f"Bearer {jwt()}"}
     # Retrieving account transactions (since 365 days ago)
     query = {
-        "date_from": (datetime.now(timezone.utc) - timedelta(days=365)).date().isoformat(),
+        "date_from": (datetime.now(timezone.utc) - timedelta(days=89)).date().isoformat(),
     }
     continuation_key = None
     todas = []
