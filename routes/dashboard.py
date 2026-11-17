@@ -26,16 +26,13 @@ def sincronizar():
     sesion_banco_id = sesion_banco[0]   #el id local
     session_details = get_session_details(session_id)
     if session_details and 'accounts' in session_details:
-        cuentas_propias = get_cuentas_usuario(session['usuario_id']) # Lista con los identificadores/nombres de tus cuentas y tu propio nombre de usuario
-        # Sacamos el nombre (posición 2 de cada tupla) de todas las cuentas:
-        nombres_cuentas = [c[2] for c in cuentas_propias]
         for uid in session_details['accounts']:
             # 1. Actualizar saldo
             datos_saldo = get_balances(uid)
             if datos_saldo and 'balances' in datos_saldo:
                 balance = datos_saldo['balances'][0]['balance_amount']
                 id_cuenta = actualizar_cuenta(
-                    sesion_banco_id, uid, "Cuenta Sandbox", 
+                    sesion_banco_id, uid, "Cuenta Bancaria", 
                     balance['amount'], balance['currency']
                 )
                 # 2. Descargar y guardar movimientos

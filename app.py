@@ -2,9 +2,10 @@ from flask import Flask
 from models.database import crear_tablas
 from routes.auth import auth
 from routes.dashboard import dashboard
+from services.enable_banking import get_config
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'una-clave-secreta'
+app.config['SECRET_KEY'] = get_config().get('secretKey', 'clave-local-dev')
 app.register_blueprint(auth)
 app.register_blueprint(dashboard)
 

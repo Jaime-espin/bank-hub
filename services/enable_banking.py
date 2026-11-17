@@ -105,7 +105,7 @@ def get_balances(account_uid):
 
 def get_transactions(account_uid):
     base_headers = {"Authorization": f"Bearer {jwt()}"}
-    # Retrieving account transactions (since 365 days ago)
+    # Retrieving account transactions (since 89 days ago, PSD2 limit)
     query = {
         "date_from": (datetime.now(timezone.utc) - timedelta(days=89)).date().isoformat(),
     }
